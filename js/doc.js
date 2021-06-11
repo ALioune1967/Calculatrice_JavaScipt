@@ -1,0 +1,178 @@
+// Tableau
+calc_array = new Array();
+// variables
+var calcul=0;
+var pas_ch=0;
+
+// Récupération d'élément par Id
+function $id(id)
+{
+        return document.getElementById(id);
+}
+// Initialisation de la Calculatrice par la touche CE et Récupération de la valeur du premier frappe
+function f_calc(id,n)
+{
+        if(n=='ce')
+        {
+                initialiser_calc(id);
+        }
+        else if(n=='=') //Condition pour le Calcul.
+        {
+                if(calc_array[id][0]!='=' && calc_array[id][1]!=1)
+                {
+                        eval('calcul='+calc_array[id][2]+calc_array[id][0]+calc_array[id][3]+';');
+                        calc_array[id][0] = '=';
+                        $id(id+'_resultat').value=calcul;
+                        calc_array[id][2]=calcul;
+                        calc_array[id][3]=0;
+                }
+        }
+        else if(n=='+-')
+        {
+                $id(id+'_resultat').value=$id(id+'_resultat').value*(-1);
+                if(calc_array[id][0]=='=')
+                {
+                        calc_array[id][2] = $id(id+'_resultat').value;
+                        calc_array[id][3] = 0;
+                }
+                else
+                {
+                        calc_array[id][3] = $id(id+'_resultat').value;
+                }
+                pas_ch = 1;
+        }
+        else if(n=='nbs')
+        {
+            // Condition pour le boutton effacer 
+                if($id(id+'_resultat').value<10 && $id(id+'_resultat').value>-10)
+                {
+                        $id(id+'_resultat').value=0;
+                }
+                else
+                {
+                        $id(id+'_resultat').value=$id(id+'_resultat').value.slice(0,$id(id+'_resultat').value.length-1);
+                }
+                if(calc_array[id][0]=='=')
+                {
+                        calc_array[id][2] = $id(id+'_resultat').value;
+                        calc_array[id][3] = 0;
+                }
+                else
+                {
+                        calc_array[id][3] = $id(id+'_resultat').value;
+                }
+        }
+        else
+        {
+                        if(calc_array[id][0]!='=' && calc_array[id][1]!=1)
+                        {
+                                eval('calcul='+calc_array[id][2]+calc_array[id][0]+calc_array[id][3]+';');
+                                $id(id+'_resultat').value=calcul;
+                                calc_array[id][2]=calcul;
+                                calc_array[id][3]=0;
+                        }
+                        calc_array[id][0] = n;
+        }
+        if(pas_ch==0)
+        {
+                calc_array[id][1] = 1;
+        }
+        else
+        {
+                pas_ch=0;
+        }
+        document.getElementById(id+'_resultat').focus();
+        return true;
+}
+
+// Fonction qui permet d'ajouter les chiffres lors du clic sur les boutons
+function add_calc(id,n)
+{
+        if(calc_array[id][1]==1)
+        {
+                $id(id+'_resultat').value=n;
+        }
+        else
+        {
+                $id(id+'_resultat').value+=n;
+        }
+        if(calc_array[id][0]=='=')
+        {
+                calc_array[id][2] = $id(id+'_resultat').value;
+                calc_array[id][3] = 0;
+        }
+        else
+        {
+                calc_array[id][3] = $id(id+'_resultat').value;
+        }
+        calc_array[id][1] = 0;
+        document.getElementById(id+'_resultat').focus();
+        return true;
+}
+function initialiser_calc(id)
+{
+        $id(id+'_resultat').value=0;
+        calc_array[id] = new Array('=',1,'0','0',0);
+        document.getElementById(id+'_resultat').focus();
+        return true;
+}
+
+// Fonction pour détecter les frappes du clavier
+function key_detect_calc(id,evt)
+{
+        if((evt.keyCode>95) && (evt.keyCode<106))
+        {
+                var nbr = evt.keyCode-96;
+                add_calc(id,nbr);
+        }
+        else if((evt.keyCode>47) && (evt.keyCode<58))
+        {
+                var nbr = evt.keyCode-48;
+                add_calc(id,nbr);
+        }
+        else if(evt.keyCode==107)
+        {
+                f_calc(id,'+');
+        }
+        else if(evt.keyCode==109)
+        {
+                f_calc(id,'-');
+        }
+        else if(evt.keyCode==106)
+        {
+                f_calc(id,'*');
+        }
+        else if(evt.keyCode==111)
+        {
+                f_calc(id,'');
+        }
+        else if(evt.keyCode==110)
+        {
+                add_calc(id,'.');
+        }
+        else if(evt.keyCode==190)
+        {
+                add_calc(id,'.');
+        }
+        else if(evt.keyCode==188)
+        {
+                add_calc(id,'.');
+        }
+        else if(evt.keyCode==13)
+        {
+                f_calc(id,'=');
+        }
+        else if(evt.keyCode==46)
+        {
+                f_calc(id,'ce');
+        }
+        else if(evt.keyCode==8)
+        {
+                f_calc(id,'nbs');
+        }
+        else if(evt.keyCode==27)
+        {
+                f_calc(id,'ce');
+        }
+        return true;
+}
